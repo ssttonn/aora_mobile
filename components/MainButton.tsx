@@ -5,12 +5,14 @@ interface MainButtonProps {
     className?: string,
     children?: ReactNode
     title?: string,
+    disabled?: boolean,
     onPress?: (event: any) => void
 }
 
-const MainButton = ({className, children, title, onPress}: MainButtonProps) => {
+const MainButton = ({className, children, title, disabled, onPress}: MainButtonProps) => {
   return (
     <TouchableOpacity
+      disabled={disabled}
       onPress={onPress}
       className={`bg-secondary rounded-xl min-h-[62px] justify-center items-center ${className}`}
     >
