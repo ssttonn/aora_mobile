@@ -14,7 +14,7 @@ const MainButton = ({className, children, title, disabled, onPress}: MainButtonP
     <TouchableOpacity
       disabled={disabled}
       onPress={onPress}
-      className={`bg-secondary rounded-xl min-h-[62px] justify-center items-center ${className}`}
+      className={`rounded-xl min-h-[62px] justify-center items-center ${className}`}
     >
       {children || <Text className="text-primary font-psemibold text-lg">{title ?? ""}</Text>}
     </TouchableOpacity>

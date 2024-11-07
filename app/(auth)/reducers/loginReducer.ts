@@ -15,7 +15,6 @@ export const loginSlice = createSlice({
     initialState,
     reducers: {
         setFormField: (state, action: PayloadAction<{ field: string; value: string }>) => {
-            console.log(action.payload);
             state[action.payload.field as keyof LoginState] = action.payload.value;
         }
     }

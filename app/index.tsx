@@ -21,7 +21,7 @@ export default function App() {
             </Text>
             <MainButton
               title="Continue with Email"
-              className="w-full mt-7"
+              className="w-full mt-7 bg-secondary"
               onPress={(e) => {
                 router.push("/login" as Href<"/login">);
               }}

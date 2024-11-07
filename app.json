@@ -14,13 +14,15 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.astrotify.aora"
+      "bundleIdentifier": "com.astrotify.aora",
+      "package": "com.astrotify.aora"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.astrotify.aora"
     },
     "web": {
       "bundler": "metro",
