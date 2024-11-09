@@ -1,9 +1,11 @@
 import homeReducer from "@/reducers/main/homeReducer";
+import searchReducer from "@/reducers/main/searchReducer";
 import { configureStore } from "@reduxjs/toolkit";
 
 export const homeStore = configureStore({
     reducer: {
-        home: homeReducer
+        home: homeReducer,
+        search: searchReducer,
     }
 })
 

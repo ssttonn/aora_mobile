@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import React, { useEffect } from "react";
 import { router, Tabs } from "expo-router";
 import { icons } from "../../constants";

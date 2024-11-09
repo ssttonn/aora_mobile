@@ -1,3 +1,4 @@
+import { convertToPostModel } from "@/helpers/extensions";
 import { fetchAllVideoPosts, fetchLatestVideoPosts } from "@/lib/appwrite";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Models } from "react-native-appwrite";
@@ -23,10 +24,7 @@ const initialState: HomeState = {
 const fetchHomeData = createAsyncThunk<{ allPosts: IVideoPost[]; latestPosts: IVideoPost[] }>(
   "home/fetchHomeData",
   async () => {
-    const [allPosts, latestPosts] = await Promise.all([
-      fetchAllVideoPosts(),
-      fetchLatestVideoPosts(),
-    ]);
+    const [allPosts, latestPosts] = await Promise.all([fetchAllVideoPosts(), fetchLatestVideoPosts()]);
 
     return {
       allPosts: allPosts.documents.map((post: Models.Document) => convertToPostModel(post)),
@@ -46,22 +44,6 @@ const refreshHomeData = createAsyncThunk<{ allPosts: IVideoPost[]; latestPosts: 
     };
   }
 );
-
-const convertToPostModel = (post: Models.Document): IVideoPost => {
-  return {
-    id: post.$id,
-    title: post.title,
-    video: post.video,
-    creator: {
-      accountId: post.creator.accountId,
-      username: post.creator.username,
-      avatar: post.creator.avatar,
-      email: post.creator.email,
-    },
-    thumbnail: post.thumbnail,
-    prompt: post.prompt,
-  };
-};
 
 const homeSlice = createSlice({
   name: "home",

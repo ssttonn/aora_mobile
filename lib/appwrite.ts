@@ -114,3 +114,16 @@ export const fetchLatestVideoPosts = async () => {
     throw error;
   }
 };
+
+
+export const searchVideoPosts = async (query: string) => {
+  try {
+    const posts = await databases.listDocuments(appwriteConfig.databaseId, appwriteConfig.videosCollectionId, [
+      Query.search("title", query),
+    ]);
+
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+}
