@@ -16,6 +16,9 @@ const SplashPage = () => {
       } else {
         router.replace("/onboarding")
       }
+   }).catch((error) => {
+    console.error(error)
+      router.replace("/onboarding")
    })
   }, [])
 

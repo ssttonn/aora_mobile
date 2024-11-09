@@ -1,6 +1,8 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, Animated } from "react-native";
 import React, { useState } from "react";
 import { icons } from "@/constants";
+import useVideoPlayer from "@/hooks/useVideoPlayer";
+import { ResizeMode, Video } from "expo-av";
 
 interface VideoCardProps {
   videoPost: IVideoPost;
@@ -14,7 +16,7 @@ const VideoCard = ({
     creator: { username, avatar },
   },
 }: VideoCardProps) => {
-  const [play, setPlay] = useState(false);
+  const { video: videoRef, fadeAnim, isPlaying, setIsPlaying, setVideoStatus } = useVideoPlayer();
 
   return (
     <View className="flex-col items-center px-4 mb-14">
@@ -37,19 +39,37 @@ const VideoCard = ({
         </View>
       </View>
 
-      {play ? (
-        <Text className="text-white">Playing</Text>
-      ) : (
-        <TouchableOpacity
-          onPress={() => {
-            setPlay(true);
+      <View className="w-full h-60 mt-3 rounded-xl overflow-hidden relative justify-center items-center">
+        <Video
+          ref={videoRef}
+          source={{ uri: "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4" }}
+          useNativeControls
+          resizeMode={ResizeMode.COVER}
+          isLooping
+          style={{ width: "100%", height: "100%" }}
+          onPlaybackStatusUpdate={(status) => {
+            setVideoStatus(status);
           }}
-          className="w-full h-60 rounded-xl mt-3 relative justify-center items-center"
+        />
+        <Animated.View
+          style={{
+            opacity: fadeAnim,
+          }}
+          className={`absolute w-full h-full ${isPlaying ? "pointer-events-none" : ""}`}
         >
-          <Image source={{ uri: thumbnail }} className="w-full h-full rounded-xl mt-3" resizeMode="cover" />
-          <Image source={icons.play} resizeMode="contain" className="w-12 h-12 absolute" />
-        </TouchableOpacity>
-      )}
+          <TouchableOpacity
+            onPress={async () => {
+              await videoRef.current?.setPositionAsync(0);
+              await videoRef.current.playAsync();
+            }}
+          >
+            <Image source={{ uri: thumbnail }} className="w-full h-full" resizeMode="cover" />
+            <View className="absolute w-full h-full justify-center items-center">
+              <Image source={icons.play} className="w-12 h-12" resizeMode="contain" />
+            </View>
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
     </View>
   );
 };

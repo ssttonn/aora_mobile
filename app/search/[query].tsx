@@ -1,10 +1,13 @@
 import { View, Text } from 'react-native'
 import React from 'react'
+import { useLocalSearchParams } from 'expo-router'
 
 const SearchPage = () => {
+  const {query} = useLocalSearchParams()
+
   return (
     <View>
-      <Text>SearchPage</Text>
+      <Text className='text-3xl text-white'>{query}</Text>
     </View>
   )
 }
