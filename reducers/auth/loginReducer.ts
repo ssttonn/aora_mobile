@@ -28,8 +28,7 @@ const initialState: LoginState = {
 };
 
 const loginUser = createAsyncThunk("login/loginUser", async ({ email, password }: LoginForm) => {
-  console.log(`email: ${email}, password: ${password}`);
-  const session = await loginUserWithEmailPassword({ email, password });
+  await loginUserWithEmailPassword({ email, password });
   // localStorage.setItem("TOKEN", session.providerAccessToken)
 });
 

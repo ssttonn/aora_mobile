@@ -1,5 +1,4 @@
 import { FlatList, View, Text, Image, Alert, RefreshControl } from "react-native";
-import Reac from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "@/constants";
 import SearchInput from "@/components/SearchInput";
@@ -8,30 +7,44 @@ import { router, usePathname } from "expo-router";
 import TrendingVideos from "@/components/(tabs)/TrendingVideos";
 import EmptyBox from "@/components/EmptyBox";
 import MainButton from "@/components/MainButton";
-import { HomeStatus } from "@/reducers/main/homeReducer";
-import useFetchPosts from "@/hooks/useFetchPosts";
+import VideoCard from "@/components/VideoCard";
+import { useSelector } from "react-redux";
+import { HomeAppDispatch, HomeRootState } from "@/stores/homeStore";
+import { useDispatch } from "react-redux";
+import { homeActions } from "@/reducers/main/homeReducer";
+import { useEffect } from "react";
 
 const useHomePage = () => {
   const pathname = usePathname();
-  const { posts, homeStatus, refreshPosts } = useFetchPosts();
+  const { allPosts, latestPosts, homeStatus } = useSelector((state: HomeRootState) => state.home);
+  const dispatch = useDispatch<HomeAppDispatch>();
+
+  const refreshPosts = () => {
+    dispatch(homeActions.refreshHomeData());
+  };
+
+  useEffect(() => {
+    dispatch(homeActions.fetchHomeData());
+  }, []);
 
   return {
     pathname,
-    posts,
+    allPosts,
+    latestPosts,
     homeStatus,
     refreshPosts,
   };
-}
+};
 
 const HomePage = () => {
-  const { pathname, posts, homeStatus, refreshPosts } = useHomePage();  
-
+  const { pathname, allPosts, latestPosts, homeStatus, refreshPosts } = useHomePage();
+  
   return (
     <DismissKeyboard>
       <SafeAreaView className="bg-primary h-full">
         <FlatList
-          data={posts}
-          renderItem={({ item }) => <Text className="text-white font-psemibold text-xl">{item.id}</Text>}
+          data={allPosts}
+          renderItem={({ item }) => <VideoCard videoPost={item} />}
           keyExtractor={(item) => item.id.toString()}
           ListHeaderComponent={() => {
             return (
@@ -56,7 +69,7 @@ const HomePage = () => {
                 />
                 <View className="w-full flex-1 pt-5 pb-8">
                   <Text className="text-gray-100 text-lg font-pregular mb-3">Latest Videos</Text>
-                  <TrendingVideos posts={[{ id: 10 }, { id: 1 }, { id: 2 }]} />
+                  <TrendingVideos posts={latestPosts} />
                 </View>
               </View>
             );
@@ -75,9 +88,9 @@ const HomePage = () => {
               </View>
             );
           }}
-          refreshControl={
-            <RefreshControl refreshing={homeStatus == HomeStatus.REFRESHING_POSTS} onRefresh={refreshPosts} />
-          }
+          // refreshControl={
+          //   <RefreshControl refreshing={homeStatus == HomeStatus.REFRESHING_POSTS} onRefresh={refreshPosts} />
+          // }
         />
       </SafeAreaView>
     </DismissKeyboard>

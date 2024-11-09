@@ -4,5 +4,5 @@ interface IVideoPost {
     thumbnail: string
     prompt: string
     video: string
-    creator: string
+    creator: IUser
 }

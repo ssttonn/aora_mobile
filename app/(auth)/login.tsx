@@ -9,17 +9,20 @@ import { AppDispatch, RootState } from "../../stores/rootStore";
 import { loginActions, LoginStatus } from "../../reducers/auth/loginReducer";
 import { Link, router } from "expo-router";
 import { useValidators } from "@/hooks/useValidators";
-import { authActions, AuthStatus } from "@/reducers/auth/authReducer";
 
-const LoginPage = () => {
-  const {email, password} = useSelector((state: RootState) => state.login.form);
-  const {errorMessage, loginStatus} = useSelector((state: RootState) => state.login);
-  const {emailValidator, passwordValidator} = useValidators();
+const useLoginPage = () => {
+  const { email, password } = useSelector((state: RootState) => state.login.form);
+  const { errorMessage, loginStatus } = useSelector((state: RootState) => state.login);
+  const { emailValidator, passwordValidator } = useValidators();
   const dispatch = useDispatch<AppDispatch>();
 
   const onLogin = async (_: any) => {
     await dispatch(loginActions.loginUser({ email, password }));
-  }
+  };
+
+  const setFormField = (field: string, value: string) => {
+    dispatch(loginActions.setFormField({ field, value }));
+  };
 
   useEffect(() => {
     if (loginStatus === LoginStatus.SUCCESS) {
@@ -29,10 +32,27 @@ const LoginPage = () => {
       Alert.alert("Error", errorMessage, [
         { text: "OK", onPress: () => dispatch(loginActions.setErrorMessage(undefined)) },
       ]);
-    } 
+    }
   }, [errorMessage, loginStatus]);
 
   const isButtonDisabled = emailValidator(email) !== "" || passwordValidator(password) !== "";
+
+  return {
+    email,
+    password,
+    errorMessage,
+    loginStatus,
+    emailValidator,
+    passwordValidator,
+    onLogin,
+    isButtonDisabled,
+    setFormField,
+  };
+};
+
+const LoginPage = () => {
+  const { email, password, loginStatus, emailValidator, passwordValidator, onLogin, isButtonDisabled, setFormField } =
+    useLoginPage();
 
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -46,7 +66,7 @@ const LoginPage = () => {
             keyboardType="email-address"
             validator={emailValidator}
             onChangeText={(value) => {
-              dispatch(loginActions.setFormField({ field: "email", value: value }));
+              setFormField("email", value);
             }}
           />
           <FormField
@@ -54,7 +74,9 @@ const LoginPage = () => {
             value={password}
             keyboardType="default"
             validator={passwordValidator}
-            onChangeText={(value) => dispatch(loginActions.setFormField({ field: "password", value: value }))}
+            onChangeText={(value) => {
+              setFormField("password", value);
+            }}
           />
           <MainButton
             title="Login"

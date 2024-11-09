@@ -1,4 +1,4 @@
-import { fetchAllVideoPosts } from "@/lib/appwrite";
+import { fetchAllVideoPosts, fetchLatestVideoPosts } from "@/lib/appwrite";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Models } from "react-native-appwrite";
 
@@ -9,73 +9,92 @@ export enum HomeStatus {
 }
 
 interface HomeState {
-  posts: IVideoPost[];
+  allPosts: IVideoPost[];
+  latestPosts: IVideoPost[];
   homeStatus: HomeStatus;
 }
 
 const initialState: HomeState = {
-  posts: [],
+  allPosts: [],
+  latestPosts: [],
   homeStatus: HomeStatus.IDLE,
 };
 
-const fetchVideoPosts = createAsyncThunk<IVideoPost[]>("home/fetchVideoPosts", async () => {
-  const posts = await fetchAllVideoPosts();
-  return posts.documents.map((post: Models.Document) => {
-    return {
-      id: post.$id,
-      title: post.title,
-      video: post.video,
-      creator: post.creator,
-      thumbnail: post.thumbnail,
-      prompt: post.prompt,
-    };
-  });
-});
+const fetchHomeData = createAsyncThunk<{ allPosts: IVideoPost[]; latestPosts: IVideoPost[] }>(
+  "home/fetchHomeData",
+  async () => {
+    const [allPosts, latestPosts] = await Promise.all([
+      fetchAllVideoPosts(),
+      fetchLatestVideoPosts(),
+    ]);
 
-const refreshVideoPosts = createAsyncThunk<IVideoPost[]>("home/refreshVideoPosts", async () => {
-  const posts = await fetchAllVideoPosts();
-  return posts.documents.map((post: Models.Document) => {
     return {
-      id: post.$id,
-      title: post.title,
-      video: post.video,
-      creator: post.creator,
-      thumbnail: post.thumbnail,
-      prompt: post.prompt,
+      allPosts: allPosts.documents.map((post: Models.Document) => convertToPostModel(post)),
+      latestPosts: latestPosts.documents.map((post: Models.Document) => convertToPostModel(post)),
     };
-  });
-});
+  }
+);
+
+const refreshHomeData = createAsyncThunk<{ allPosts: IVideoPost[]; latestPosts: IVideoPost[] }>(
+  "home/refreshHomeData",
+  async () => {
+    const [allPosts, latestPosts] = await Promise.all([fetchAllVideoPosts(), fetchLatestVideoPosts()]);
+
+    return {
+      allPosts: allPosts.documents.map((post: Models.Document) => convertToPostModel(post)),
+      latestPosts: latestPosts.documents.map((post: Models.Document) => convertToPostModel(post)),
+    };
+  }
+);
+
+const convertToPostModel = (post: Models.Document): IVideoPost => {
+  return {
+    id: post.$id,
+    title: post.title,
+    video: post.video,
+    creator: {
+      accountId: post.creator.accountId,
+      username: post.creator.username,
+      avatar: post.creator.avatar,
+      email: post.creator.email,
+    },
+    thumbnail: post.thumbnail,
+    prompt: post.prompt,
+  };
+};
 
 const homeSlice = createSlice({
   name: "home",
   initialState,
   reducers: {
     setPosts: (state, action: PayloadAction<IVideoPost[]>) => {
-      state.posts = action.payload;
+      state.allPosts = action.payload;
     },
     setHomeStatus: (state, action: PayloadAction<HomeStatus>) => {
       state.homeStatus = action.payload;
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchVideoPosts.pending, (state) => {
+    builder.addCase(fetchHomeData.pending, (state) => {
       state.homeStatus = HomeStatus.FETCHING_POSTS;
     });
-    builder.addCase(fetchVideoPosts.fulfilled, (state, action) => {
-      state.posts = action.payload;
+    builder.addCase(fetchHomeData.fulfilled, (state, action) => {
+      state.allPosts = action.payload.allPosts;
+      state.latestPosts = action.payload.latestPosts;
       state.homeStatus = HomeStatus.IDLE;
     });
-    builder.addCase(fetchVideoPosts.rejected, (state) => {
+    builder.addCase(fetchHomeData.rejected, (state) => {
       state.homeStatus = HomeStatus.IDLE;
     });
-    builder.addCase(refreshVideoPosts.pending, (state) => {
+    builder.addCase(refreshHomeData.pending, (state) => {
       state.homeStatus = HomeStatus.REFRESHING_POSTS;
     });
-    builder.addCase(refreshVideoPosts.fulfilled, (state, action) => {
-      state.posts = action.payload;
+    builder.addCase(refreshHomeData.fulfilled, (state, action) => {
+      state.allPosts = action.payload.allPosts;
+      state.latestPosts = action.payload.latestPosts;
       state.homeStatus = HomeStatus.IDLE;
     });
-    builder.addCase(refreshVideoPosts.rejected, (state) => {
+    builder.addCase(refreshHomeData.rejected, (state) => {
       state.homeStatus = HomeStatus.IDLE;
     });
   },
@@ -83,8 +102,8 @@ const homeSlice = createSlice({
 
 export const homeActions = {
   ...homeSlice.actions,
-  fetchVideoPosts,
-  refreshVideoPosts,
+  fetchHomeData,
+  refreshHomeData,
 };
 
 export default homeSlice.reducer;

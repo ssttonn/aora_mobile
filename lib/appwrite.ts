@@ -65,28 +65,24 @@ export const loginUserWithEmailPassword = async ({ email, password }: { email: s
 
 export const getCurrentUser = async () => {
   try {
-    const currentAccount = await account.get()
+    const currentAccount = await account.get();
     if (!currentAccount) {
-      throw new Error("No user found")
+      throw new Error("No user found");
     }
 
-    const currentUsers = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.usersCollectionId,
-      [
-        Query.equal("accountId", currentAccount.$id)
-      ]
-    )
+    const currentUsers = await databases.listDocuments(appwriteConfig.databaseId, appwriteConfig.usersCollectionId, [
+      Query.equal("accountId", currentAccount.$id),
+    ]);
 
     if (!currentUsers.documents.length) {
-      throw new Error("No user found")
+      throw new Error("No user found");
     }
 
-    return currentUsers.documents[0]
+    return currentUsers.documents[0];
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
 export const logoutUser = async () => {
   try {
@@ -99,12 +95,22 @@ export const logoutUser = async () => {
 
 export const fetchAllVideoPosts = async () => {
   try {
-    const posts = await databases.listDocuments(appwriteConfig.databaseId, appwriteConfig.videosCollectionId,
-    );
+    const posts = await databases.listDocuments(appwriteConfig.databaseId, appwriteConfig.videosCollectionId);
 
-    console.log(posts);
     return posts;
   } catch (error) {
     throw error;
   }
-}
+};
+
+export const fetchLatestVideoPosts = async () => {
+  try {
+    const posts = await databases.listDocuments(appwriteConfig.databaseId, appwriteConfig.videosCollectionId, [
+      Query.orderDesc("$createdAt"),
+      Query.limit(7),
+    ]);
+    return posts;
+  } catch (error) {
+    throw error;
+  }
+};

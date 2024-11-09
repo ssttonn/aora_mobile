@@ -1,6 +1,6 @@
 interface IUser {
-    email: string | undefined;
-    username: string | undefined;
-    avatar: string | undefined;
-    accountId: string | undefined;
+    email: string ;
+    username: string;
+    avatar: string
+    accountId: string;
 }
