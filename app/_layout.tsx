@@ -1,4 +1,3 @@
-import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { Stack } from "expo-router";
 import "../global.css";
@@ -6,7 +5,7 @@ import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { SplashScreen } from "expo-router";
 import { Provider } from "react-redux";
-import { store } from "./store";
+import { rootStore } from "../stores/rootStore";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -36,12 +35,12 @@ const RootLayout = () => {
   }
 
   return (
-    <Provider store={store}>
+    <Provider store={rootStore}>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="/search/[query]" options={{ headerShown: false }} />
+        {/* <Stack.Screen name="/search/[query]" options={{ headerShown: false }} /> */}
       </Stack>
     </Provider>
   );

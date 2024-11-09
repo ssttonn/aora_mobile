@@ -1,7 +1,11 @@
 import { Image, StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { Tabs } from "expo-router";
+import React, { useEffect } from "react";
+import { router, Tabs } from "expo-router";
 import { icons } from "../../constants";
+import { RootState } from "../../stores/rootStore";
+import { Provider, useSelector } from "react-redux";
+import { AuthStatus } from "@/reducers/auth/authReducer";
+import { homeStore } from "@/stores/homeStore";
 
 interface TabIconProps {
   icon: any;
@@ -22,8 +26,16 @@ const TabIcon = ({ icon, color, name, focused }: TabIconProps) => {
 };
 
 const TabsLayout = () => {
+  const status = useSelector((state: RootState) => state.auth.status)
+
+  useEffect(() => {
+    if (status === AuthStatus.UNAUTHENTICATED) {
+      router.replace("/onboarding");
+    }
+  }, [status])
+
   return (
-    <>
+    <Provider store={homeStore}>
       <Tabs
         screenOptions={{
           tabBarShowLabel: false,
@@ -80,7 +92,7 @@ const TabsLayout = () => {
           }}
         />
       </Tabs>
-    </>
+    </Provider>
   );
 };
 
