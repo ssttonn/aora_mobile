@@ -12,7 +12,6 @@ interface SearchInputProps {
 }
 
 const SearchInput = ({ initialQuery, onSearchQueryChanged, onSearchClicked, placeholder }: SearchInputProps) => {
-  const pathname = usePathname();
   const [query, setQuery] = useState(initialQuery || "");
 
   if (onSearchQueryChanged) {

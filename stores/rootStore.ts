@@ -2,12 +2,14 @@ import {configureStore} from '@reduxjs/toolkit';
 import loginReducer from '../reducers/auth/loginReducer';
 import registerReducer from "../reducers/auth/registerReducer";
 import authReducer from '../reducers/auth/authReducer';
+import searchReducer from '@/reducers/searchReducer';
 
 export const rootStore = configureStore({
     reducer: {
         auth: authReducer,
         login: loginReducer,
-        register: registerReducer
+        register: registerReducer,
+        search: searchReducer,
     }
 })
 

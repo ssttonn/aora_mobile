@@ -9,15 +9,15 @@ import EmptyBox from "@/components/EmptyBox";
 import MainButton from "@/components/MainButton";
 import VideoCard from "@/components/VideoCard";
 import { useSelector } from "react-redux";
-import { HomeAppDispatch, HomeRootState } from "@/stores/homeStore";
+import { MainAppDispatch, MainRootState } from "@/stores/mainStore";
 import { useDispatch } from "react-redux";
 import { homeActions } from "@/reducers/main/homeReducer";
 import { useEffect } from "react";
 
 const useHomePage = () => {
   const pathname = usePathname();
-  const { allPosts, latestPosts, homeStatus } = useSelector((state: HomeRootState) => state.home);
-  const dispatch = useDispatch<HomeAppDispatch>();
+  const { allPosts, latestPosts, homeStatus } = useSelector((state: MainRootState) => state.home);
+  const dispatch = useDispatch<MainAppDispatch>();
 
   const refreshPosts = () => {
     dispatch(homeActions.refreshHomeData());

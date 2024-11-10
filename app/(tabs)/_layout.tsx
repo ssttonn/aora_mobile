@@ -5,7 +5,7 @@ import { icons } from "../../constants";
 import { RootState } from "../../stores/rootStore";
 import { Provider, useSelector } from "react-redux";
 import { AuthStatus } from "@/reducers/auth/authReducer";
-import { homeStore } from "@/stores/homeStore";
+import { mainStore } from "@/stores/mainStore";
 
 interface TabIconProps {
   icon: any;
@@ -35,7 +35,7 @@ const TabsLayout = () => {
   }, [status])
 
   return (
-    <Provider store={homeStore}>
+    <Provider store={mainStore}>
       <Tabs
         screenOptions={{
           tabBarShowLabel: false,

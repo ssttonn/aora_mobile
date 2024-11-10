@@ -18,6 +18,7 @@ interface SearchState {
 const initialState: SearchState = {
     posts: [],
     status: SearchStatus.IDLE,
+    errorMessage: undefined,
 };
 
 const searchPosts = createAsyncThunk("search/fetchPosts", async (query: string) => {
@@ -33,9 +34,6 @@ const searchSlice = createSlice({
     name: "search",
     initialState,
     reducers: {
-        clearSearch: (state) => {
-            state.posts = [];
-        },
     },
     extraReducers: (builder) => {
         builder.addCase(searchPosts.pending, (state) => {
